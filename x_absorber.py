@@ -2,6 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from geometry import VecYZ
 
 from x_constants import PHASE_TO_MU, MATERIALS, WAVELENGTH
 from geometry import Vec3D, RectYZ, EulerAng
@@ -46,7 +47,7 @@ class BallAbsorber():
     # all distances in mm, angles in radians!
     def __init__(self, shift=(0.e-3, 0.e-3, 0.e-3), diameter=300.e-3, 
                        mu=None, material='Fe', wavelength='MoKaw', 
-                       mask_step=10.e-3,):
+                       mask_step=10.e-3, cell_length = 0.01, EulerAng = (0,0,54.74)):
         if all(isinstance(val, (int, float)) for val in shift) and\
            len(shift) == 3:
             self.shift = Vec3D(shift)
@@ -64,7 +65,7 @@ class BallAbsorber():
 
         self.material = material
         self.wavelength = wavelength
-
+        self.cell_length = cell_length
         if mu:
             self.mu = mu
         elif material in MATERIALS and wavelength in WAVELENGTH:
@@ -91,7 +92,7 @@ class BallAbsorber():
     
     #TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def rotate_euler(self, eu_ang: EulerAng):
-        chi_rot = Vec3D(self.shift).rot_euler('x', EulerAng().chi)
+        chi_rot = Vec3D(self.shift).rot_euler('x', self.EulerAng().chi)
         chi_phi_rot = chi_rot.rot_euler('z', EulerAng().phi)
         chi_phi_omega_rot = chi_phi_rot.rot_euler('z', EulerAng().om)
         #calc self.rot_shift from eu_ang and self.shift
@@ -106,6 +107,9 @@ class BallAbsorber():
     def proj_z (self, rotate_euler):
         return rotate_euler[2]
 
+    def origin_index(self):
+        shift_indeces = VecYZ(*(self.proj_y(), self.proj_z())) / self.cell_length
+        return round((self.mask_dim - VecYZ(1, 1)) / 2. - shift_indeces)
 
 
     #TODO make i<->r transforms using self.rot_shift value !!!
