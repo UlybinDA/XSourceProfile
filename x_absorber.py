@@ -97,14 +97,15 @@ class BallAbsorber():
         #calc self.rot_shift from eu_ang and self.shift
         return chi_phi_omega_rot
 
-    def vect_proj (self,rotate_euler):
-        if self.x:
-            return rotate_euler[0]
-        if self.y:
-            return rotate_euler[1]
-        if self.z:
-            return rotate_euler[2]
-        
+    def proj_x (self, rotate_euler):
+        return rotate_euler[0]
+
+    def proj_y (self, rotate_euler):
+        return rotate_euler[1]
+
+    def proj_z (self, rotate_euler):
+        return rotate_euler[2]
+
 
 
     #TODO make i<->r transforms using self.rot_shift value !!!
