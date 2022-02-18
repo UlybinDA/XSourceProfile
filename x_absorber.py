@@ -115,18 +115,15 @@ class BallAbsorber():
         i = r / self.cell_length + self.origin_index
         return round(i)
 
-    #TODO make i<->r transforms using self.rot_shift value !!!
+    def index_to_c_coord(self, i: VecYZ) -> VecYZ:
+        # center of the cell with index i
+        r = (i - self.origin_index) * self.cell_length
+        return r
 
-    
-    # def index_to_c_coord(self, i: VecYZ) -> VecYZ:
-    #     # center of the cell with index i
-    #     r = (i - self.origin_index) * self.cell_length
-    #     return r
-
-    # def index_to_l_coord(self, i: VecYZ) -> VecYZ:
-    #     # the lower corner of the cell with index i
-    #     r = (i - self.origin_index - VecYZ(0.5, 0.5)) * self.cell_length
-    #     return r
+    def index_to_l_coord(self, i: VecYZ) -> VecYZ:
+        # the lower corner of the cell with index i
+        r = (i - self.origin_index - VecYZ(0.5, 0.5)) * self.cell_length
+        return r
 
     # def index_to_u_coord(self, i: VecYZ) -> VecYZ:
     #     # the upper corner of the cell with index i
