@@ -91,7 +91,7 @@ class BallAbsorber():
         pass      
     
     #TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    def rotate_euler(self, eu_ang: EulerAng):
+    def rotate_euler(self):
         chi_rot = Vec3D(self.shift).rot_euler('x', self.EulerAng().chi)
         chi_phi_rot = chi_rot.rot_euler('z', EulerAng().phi)
         chi_phi_omega_rot = chi_phi_rot.rot_euler('z', EulerAng().om)
@@ -108,7 +108,7 @@ class BallAbsorber():
         return rotate_euler[2]
 
     def origin_index(self):
-        shift_indeces = VecYZ(*(self.proj_y(), self.proj_z())) / self.cell_length
+        shift_indeces = VecYZ(*(self.proj_y, self.proj_z)) / self.cell_length
         return round((self.mask_dim - VecYZ(1, 1)) / 2. - shift_indeces)
 
     def coord_to_index(self, r: VecYZ) -> VecYZ:
@@ -125,42 +125,40 @@ class BallAbsorber():
         r = (i - self.origin_index - VecYZ(0.5, 0.5)) * self.cell_length
         return r
 
-    # def index_to_u_coord(self, i: VecYZ) -> VecYZ:
-    #     # the upper corner of the cell with index i
-    #     r = (i - self.origin_index + VecYZ(0.5, 0.5)) * self.cell_length
-    #     return r
+    def index_to_u_coord(self, i: VecYZ) -> VecYZ:
+        # the upper corner of the cell with index i
+        r = (i - self.origin_index + VecYZ(0.5, 0.5)) * self.cell_length
+        return r
     
-    # def show_T(self, unit='mm'):
-    #     if unit == 'mm':
-    #         unit_transform_factor = 1.
-    #     elif unit == 'um':
-    #         unit_transform_factor = 1000.
-    #     else:
-    #         raise ValueError(f'Unknown units for length: {unit}')
-    #     fig, ax = plt.subplots()
-    #     ax.invert_xaxis()
-    #     ax.set_aspect('equal', adjustable='box')
-    #     #TODO change when make it non-uniform and shifted!
-    #     r_min = self.index_to_l_coord(VecYZ(0, 0))
-    #     r_max = self.index_to_u_coord(self.grid_dim - VecYZ(1, 1))
-    #     y_range = np.linspace(r_min.y, r_max.y, self.grid_dim.y + 1) * unit_transform_factor
-    #     z_range = np.linspace(r_min.z, r_max.z, self.grid_dim.z + 1) * unit_transform_factor
-    #     cs = ax.pcolormesh(y_range, z_range, self.grid_I)
-    #     plt.scatter(0., 0., color='red', marker= '+')
-    #     plt.scatter(0., 100., color='red', marker= '^')
-    #     plt.scatter(100., 0., color='red', marker= '<')
-    #     cbar = fig.colorbar(cs)
-    #     plt.show()
+    def show_T(self, unit='mm'):
+        if unit == 'mm':
+            unit_transform_factor = 1.
+        elif unit == 'um':
+            unit_transform_factor = 1000.
+        else:
+            raise ValueError(f'Unknown units for length: {unit}')
+        fig, ax = plt.subplots()
+        ax.invert_xaxis()
+        ax.set_aspect('equal', adjustable='box')
+        #TODO change when make it non-uniform and shifted!
+        r_min = self.index_to_l_coord(VecYZ(0, 0))
+        r_max = self.index_to_u_coord(self.mask_dim - VecYZ(1, 1))
+        y_range = np.linspace(r_min.y, r_max.y, self.mask_dim.y + 1) * unit_transform_factor
+        z_range = np.linspace(r_min.z, r_max.z, self.mask_dim.z + 1) * unit_transform_factor
+        cs = ax.pcolormesh(y_range, z_range, self.T_mask)
+        plt.scatter(0., 0., color='red', marker= '+')
+        plt.scatter(0., 100., color='red', marker= '^')
+        plt.scatter(100., 0., color='red', marker= '<')
+        cbar = fig.colorbar(cs)
+        plt.show()
     
 
 
 if __name__ == '__main__':
-    test_ball = BallAbsorber(diameter=380.e-3)
+    test_ball = BallAbsorber(diameter=380.e-3,EulerAng=(0,30,54.74),shift=(0.,0.,0.))
     print(test_ball)
+    EulerAng(om_phi_chi=(0., 30., 54.73))
     # print("Transmission mask slice:\n", test_ball.T_mask[::30,::30])
     # print("Transmission log-mask slice:\n", np.log(test_ball.T_mask[::30,::30]))
-    fig, ax = plt.subplots()
-    cs = ax.pcolormesh(np.log(test_ball.T_mask))
-    cbar = fig.colorbar(cs)
-    plt.show()
+    test_ball.show_T()
     
