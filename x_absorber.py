@@ -111,11 +111,12 @@ class BallAbsorber():
         shift_indeces = VecYZ(*(self.proj_y(), self.proj_z())) / self.cell_length
         return round((self.mask_dim - VecYZ(1, 1)) / 2. - shift_indeces)
 
+    def coord_to_index(self, r: VecYZ) -> VecYZ:
+        i = r / self.cell_length + self.origin_index
+        return round(i)
 
     #TODO make i<->r transforms using self.rot_shift value !!!
-    # def coord_to_index(self, r: VecYZ) -> VecYZ:
-    #     i = r / self.cell_length + self.origin_index
-    #     return round(i)
+
     
     # def index_to_c_coord(self, i: VecYZ) -> VecYZ:
     #     # center of the cell with index i
