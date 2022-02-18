@@ -46,7 +46,7 @@ class BallAbsorber():
     # all distances in mm, angles in radians!
     def __init__(self, shift=(0.e-3, 0.e-3, 0.e-3), diameter=300.e-3, 
                        mu=None, material='Fe', wavelength='MoKaw', 
-                       mask_step=10.e-3):
+                       mask_step=10.e-3,):
         if all(isinstance(val, (int, float)) for val in shift) and\
            len(shift) == 3:
             self.shift = Vec3D(shift)
@@ -91,9 +91,22 @@ class BallAbsorber():
     
     #TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def rotate_euler(self, eu_ang: EulerAng):
+        chi_rot = Vec3D(self.shift).rot_euler('x', EulerAng().chi)
+        chi_phi_rot = chi_rot.rot_euler('z', EulerAng().phi)
+        chi_phi_omega_rot = chi_phi_rot.rot_euler('z', EulerAng().om)
         #calc self.rot_shift from eu_ang and self.shift
-        pass
-    
+        return chi_phi_omega_rot
+
+    def vect_proj (self,rotate_euler):
+        if self.x:
+            return rotate_euler[0]
+        if self.y:
+            return rotate_euler[1]
+        if self.z:
+            return rotate_euler[2]
+        
+
+
     #TODO make i<->r transforms using self.rot_shift value !!!
     # def coord_to_index(self, r: VecYZ) -> VecYZ:
     #     i = r / self.cell_length + self.origin_index
